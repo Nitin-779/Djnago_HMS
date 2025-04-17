@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #4158d0, #c850c0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 400px;
+        }
+
+        .container h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #4158d0;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-number {
+            flex: 1;
+        }
+
+        .expiry-cvv {
+            display: flex;
+            gap: 15px;
+        }
+
+        .expiry, .cvv {
+            width: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #4158d0, #c850c0);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+
+        ul {
+            margin-bottom: 20px;
+            padding: 10px;
+            list-style: none;
+        }
+
+        ul li {
+            color: green;
+            text-align: center;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            color: #4158d0;
+            margin-right: 10px;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: #4CAF50;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Payment Details</h2>
+
+        <!-- Django Messages -->
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="POST" action="{% url 'payments' %}" id="payment-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Card Holder Name</label>
+                <input type="text" name="card_holder" placeholder="Enter card holder name" required>
+            </div>
+            
+            <div class="form-group card-number">
+                <label>Card Number</label>
+                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+            </div>
+            
+            <div class="form-group expiry-cvv">
+                <div class="expiry">
+                    <label>Expiry Date</label>
+                    <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+                </div>
+                <div class="cvv">
+                    <label>CVV</label>
+                    <input type="password" maxlength="3" placeholder="123" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" name="amount" placeholder="Enter amount" required>
+            </div>
+        
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select name="payment_method" required>
+                    <option value="">-- Select Method --</option>
+                    <option value="Card">Card</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Netbanking">Netbanking</option>
+                </select>
+            </div>
+            
+            <button type="submit">Pay Now</button>
+            <div class="success-message" id="success-message">Payment Successful!</div>
+        </form>
+    </div>
+
+    <script>
+        // Card number formatting
+        document.getElementById('card-number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            for(let i = 0; i < value.length; i++) {
+                if(i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            e.target.value = formattedValue;
+        });
+
+        // Expiry date formatting
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if(value.length > 2) {
+                value = value.substr(0,2) + '/' + value.substr(2);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
