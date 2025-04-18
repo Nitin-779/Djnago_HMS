@@ -65,6 +65,7 @@ h2 {
 <body>
     <div class="container mt-4">
         <h2>Payments</h2>
+        <a href="{% url 'a_dash'%}" class="btn btn-secondary mb-4">Back to Dashboard</a>
         <table class="table">
             <thead>
                 <tr>
@@ -75,7 +76,7 @@ h2 {
                 </tr>
             </thead>
             <tbody>
-                {% for payment in payments %}
+                {% for payment in items %}
                     <tr>
                         <td>{{ payment.user.username }}</td>
                         <td>{{ payment.amount }}</td>
@@ -86,6 +87,7 @@ h2 {
                             {% endif %}
                         </td>
                     </tr>
+                
                 {% endfor %}
             </tbody>
         </table>

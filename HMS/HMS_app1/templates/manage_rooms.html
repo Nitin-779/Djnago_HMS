@@ -113,7 +113,7 @@ h1 {
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Manage Rooms</h1>
-        
+        <a href="{% url 'a_dash'%}" class="btn btn-primary mb-3">Back to Dashboard</a>
         <a href="{% url 'add_rooms'%}" class="btn btn-primary mb-3">Add New Room</a>
 
 
@@ -130,7 +130,7 @@ h1 {
                 </tr>
             </thead>
             <tbody>
-                {% for room in rooms %}
+                {% for room in items %}
                 <tr>
                     <td>{{ room.id }}</td>
                     <td>{{ room.hostel_name }}</td>
@@ -144,8 +144,8 @@ h1 {
                         {% endif %}
                     </td>
                     <td>
-                        <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'edit_room' room_id=room.id %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a onclick="return confirm('Are you sure ?')" href="{% url 'delete_room' room_id=room.id %}" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}

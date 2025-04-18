@@ -132,19 +132,101 @@ def admin_dashboard_view(request):
 
 @login_required
 def manage_users_view(request):
-    return render(request, 'manageUsers.html')
+    users = User.objects.all()
+    return render(request, 'manageUsers.html',{ 'users': users})
+
+@login_required
+def delete_user_view(request, user_id):
+    user= User.objects.get(id=user_id)
+    user.delete()
+    messages.success(request, "User deleted successfully.")
+    return redirect('manage_users')
 
 @login_required
 def manage_rooms_view(request):
-    return render(request, 'manage_rooms.html')
+    nitin=Room.objects.all()
+    return render(request, 'manage_rooms.html',{"items":nitin})
 
 @login_required
-def manage_payments_view(request):
-    return render(request, 'manage_payments.html')
+def delete_room_view(request, room_id):
+    room = Room.objects.get(id=room_id)
+    room.delete()
+    messages.success(request, "Room deleted successfully.")
+    return redirect('manage_rooms')
+
+
+@login_required
+def edit_room_view(request, room_id):
+    room = Room.objects.get(id=room_id)
+    if request.method == 'POST':
+        hostel_name = request.POST.get('hostel_name')
+        rating = request.POST.get('rating')
+        city = request.POST.get('city')
+        image = request.FILES.get('image')
+
+        if not hostel_name or not rating or not city:
+            messages.error(request, "Please fill all required fields.")
+            return redirect('edit_room_view', room_id=room_id)
+
+        try:
+            rating = float(rating)
+            if rating < 0 or rating > 5:
+                raise ValueError("Rating must be between 0 and 5.")
+        except ValueError:
+            messages.error(request, "Invalid rating. Please enter a number between 0 and 5.")
+            return redirect('edit_room_view', room_id=room_id)
+
+        room.hostel_name = hostel_name
+        room.rating = rating
+        room.city = city
+        if image:
+            room.image = image
+        room.save()
+
+        messages.success(request, "Room updated successfully!")
+        return redirect('manage_rooms')
+
+    return render(request, 'editroom.html', {'room': room})
+        
+
+
+
+
 
 @login_required
 def add_rooms_view(request):
+    if request.method == 'POST':
+        hostel_name = request.POST.get('hostel_name')
+        rating = request.POST.get('rating')
+        city = request.POST.get('city')
+        image = request.FILES.get('image')
+
+        if not hostel_name or not rating or not city:
+            messages.error(request, "Please fill all required fields.")
+            return redirect('add_rooms_view')
+
+        try:
+            rating = float(rating)
+            if rating < 0 or rating > 5:
+                raise ValueError("Rating must be between 0 and 5.")
+        except ValueError:
+            messages.error(request, "Invalid rating. Please enter a number between 0 and 5.")
+            return redirect('add_rooms_view')
+
+        Room.objects.create(
+            hostel_name=hostel_name,
+            rating=rating,
+            city=city,
+            image=image
+        )
+        messages.success(request, "Room added successfully!")
+        return redirect('manage_rooms')
     return render(request, 'add_rooms.html')
+
+@login_required
+def manage_payments_view(request):
+    pay=Payment.objects.all()
+    return render(request, 'manage_payments.html',{"items":pay})
 
 def profile_view(request):
     user = User.objects.all()       

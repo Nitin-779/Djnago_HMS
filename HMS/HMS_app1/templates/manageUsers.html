@@ -150,7 +150,7 @@ h2, h3 {
                         <td>{{ user.email }}</td>
                         <td>
                             <!-- You can add actions like delete or edit here -->
-                            <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                            <a onclick="return confirm('Are you sure ?')" href="{% url 'delete_user' user_id=user.id %}" class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>
                 {% empty %}
